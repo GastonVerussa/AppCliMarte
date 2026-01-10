@@ -1,112 +1,99 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { StyleSheet, FlatList, View, Text } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { Collapsible } from '../../src/components/ui/collapsible';
-import { ExternalLink } from '../../src/components/external-link';
-import ParallaxScrollView from '../../src/components/parallax-scroll-view';
-import { ThemedText } from '../../src/components/themed-text';
-import { ThemedView } from '../../src/components/themed-view';
-import { IconSymbol } from '../../src/components/ui/icon-symbol';
-import { Fonts } from '../../src/constants/theme';
+// Datos simulados para el historial
+const HISTORY_DATA = [
+  { id: '1', sol: '3000', date: 'Feb 11, 2026', status: 'Soleado', max: '-12°C' },
+  { id: '2', sol: '2999', date: 'Feb 10, 2026', status: 'Viento', max: '-18°C' },
+  { id: '3', sol: '2998', date: 'Feb 09, 2026', status: 'Tormenta', max: '-22°C' },
+  { id: '4', sol: '2997', date: 'Feb 08, 2026', status: 'Soleado', max: '-14°C' },
+  { id: '5', sol: '2996', date: 'Feb 07, 2026', status: 'Nublado', max: '-15°C' },
+  { id: '6', sol: '2995', date: 'Feb 06, 2026', status: 'Despejado', max: '-13°C' },
+];
 
-export default function TabTwoScreen() {
+export default function ExploreScreen() {
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
-      headerImage={
-        <IconSymbol
-          size={310}
-          color="#808080"
-          name="chevron.left.forwardslash.chevron.right"
-          style={styles.headerImage}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText
-          type="title"
-          style={{
-            fontFamily: Fonts.rounded,
-          }}>
-          Explore
-        </ThemedText>
-      </ThemedView>
-      <ThemedText>This app includes example code to help you get started.</ThemedText>
-      <Collapsible title="File-based routing">
-        <ThemedText>
-          This app has two screens:{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/explore.tsx</ThemedText>
-        </ThemedText>
-        <ThemedText>
-          The layout file in <ThemedText type="defaultSemiBold">app/(tabs)/_layout.tsx</ThemedText>{' '}
-          sets up the tab navigator.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/router/introduction">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Android, iOS, and web support">
-        <ThemedText>
-          You can open this project on Android, iOS, and the web. To open the web version, press{' '}
-          <ThemedText type="defaultSemiBold">w</ThemedText> in the terminal running this project.
-        </ThemedText>
-      </Collapsible>
-      <Collapsible title="Images">
-        <ThemedText>
-          For static images, you can use the <ThemedText type="defaultSemiBold">@2x</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">@3x</ThemedText> suffixes to provide files for
-          different screen densities
-        </ThemedText>
-        <Image
-          source={require('../../assets/images/react-logo.png')}
-          style={{ width: 100, height: 100, alignSelf: 'center' }}
-        />
-        <ExternalLink href="https://reactnative.dev/docs/images">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Light and dark mode components">
-        <ThemedText>
-          This template has light and dark mode support. The{' '}
-          <ThemedText type="defaultSemiBold">useColorScheme()</ThemedText> hook lets you inspect
-          what the user&apos;s current color scheme is, and so you can adjust UI colors accordingly.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/develop/user-interface/color-themes/">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Animations">
-        <ThemedText>
-          This template includes an example of an animated component. The{' '}
-          <ThemedText type="defaultSemiBold">components/HelloWave.tsx</ThemedText> component uses
-          the powerful{' '}
-          <ThemedText type="defaultSemiBold" style={{ fontFamily: Fonts.mono }}>
-            react-native-reanimated
-          </ThemedText>{' '}
-          library to create a waving hand animation.
-        </ThemedText>
-        {Platform.select({
-          ios: (
-            <ThemedText>
-              The <ThemedText type="defaultSemiBold">components/ParallaxScrollView.tsx</ThemedText>{' '}
-              component provides a parallax effect for the header image.
-            </ThemedText>
-          ),
-        })}
-      </Collapsible>
-    </ParallaxScrollView>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.title}>Historial 📜</Text>
+        <Text style={styles.subtitle}>Registro de días anteriores</Text>
+      </View>
+
+      <FlatList
+        data={HISTORY_DATA}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <View style={styles.itemContainer}>
+            <View style={styles.dateInfo}>
+              <Text style={styles.solText}>Sol {item.sol}</Text>
+              <Text style={styles.dateText}>{item.date}</Text>
+            </View>
+            <View style={styles.weatherInfo}>
+              <Text style={styles.statusText}>{item.status}</Text>
+              <Text style={styles.tempText}>{item.max}</Text>
+            </View>
+          </View>
+        )}
+        contentContainerStyle={styles.listContent}
+      />
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  headerImage: {
-    color: '#808080',
-    bottom: -90,
-    left: -35,
-    position: 'absolute',
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
   },
-  titleContainer: {
+  header: {
+    padding: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: '#666',
+  },
+  listContent: {
+    padding: 20,
+  },
+  itemContainer: {
     flexDirection: 'row',
-    gap: 8,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
+  },
+  dateInfo: {
+    flexDirection: 'column',
+  },
+  solText: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#333',
+  },
+  dateText: {
+    fontSize: 14,
+    color: '#888',
+    marginTop: 2,
+  },
+  weatherInfo: {
+    alignItems: 'flex-end',
+  },
+  statusText: {
+    fontSize: 14,
+    color: '#555',
+    marginBottom: 2,
+  },
+  tempText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#D0421B', // Un color "marciano" para la temperatura
   },
 });
