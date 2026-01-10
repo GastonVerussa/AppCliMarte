@@ -1,7 +1,6 @@
 import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Alert } from 'react-native';
-// Importamos solo tu nuevo servicio
 import { getWeatherBySol } from '../services/weatherService';
 
 export type WeatherReport = {
@@ -52,38 +51,29 @@ export function WeatherProvider({ children }: { children: ReactNode }) {
     try {
       console.log(`Consultando servicio para Sol ${solNumber}...`);
       
-      // 1. LLAMAMOS AL SERVICIO (Código limpio)
       const data = await getWeatherBySol(solNumber);
       
-      // 2. Si el servicio responde bien, creamos el reporte
       const newReport: WeatherReport = {
         id: Date.now().toString(),
         sol: data.sol,
         date: data.date,
         max: data.max,
         min: data.min,
-        status: 'Datos Reales', // Puedes calcular esto si quieres
+        status: 'Datos Reales',
         notes: 'Obtenido vía WeatherService',
       };
 
       saveToStorage([newReport, ...reports]);
       Alert.alert("¡Éxito!", "Datos descargados correctamente.");
 
-    } catch (error) {
-      console.log("El servicio falló, usando datos simulados:", error);
+    } catch (error: any) {
+      console.log("Error al consultar API:", error.message);
       
-      // FALLBACK: Generamos datos falsos si la API falla
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      const mockReport: WeatherReport = {
-        id: Date.now().toString(),
-        sol: solNumber,
-        date: new Date().toLocaleDateString(),
-        max: `${Math.floor(Math.random() * (0 - -20) + -20)}°C`,
-        min: `${Math.floor(Math.random() * (-60 - -100) + -100)}°C`,
-        status: 'Simulado',
-        notes: 'Dato generado (API no disponible).',
-      };
-      saveToStorage([mockReport, ...reports]);
+      // CAMBIO IMPORTANTE: 
+      // Ya NO generamos datos simulados.
+      // Solo mostramos el error real al usuario.
+      Alert.alert("No se encontraron datos", error.message);
+      
     } finally {
       setIsLoading(false);
     }
